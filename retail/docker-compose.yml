@@ -1,0 +1,52 @@
+services:
+  # ── Next.js CRM application ──────────────────────────────────────────────────
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: production
+      JWT_SECRET: ${JWT_SECRET}
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_USER: ${MYSQL_USER:-crm}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-retail_crm}
+      ALLOW_REGISTRATION: ${ALLOW_REGISTRATION:-false}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - crm_net
+
+  # ── MySQL 8 ──────────────────────────────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-retail_crm}
+      MYSQL_USER: ${MYSQL_USER:-crm}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./scripts/001_create_tables_mysql.sql:/docker-entrypoint-initdb.d/001_schema.sql:ro
+    # ports: 3306 is intentionally NOT exposed — access MySQL only through the
+    # crm_net bridge network. To connect locally during development, run:
+    #   docker compose exec db mysql -u crm -p retail_crm
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-p${MYSQL_ROOT_PASSWORD}']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - crm_net
+
+volumes:
+  db_data:
+
+networks:
+  crm_net:
+    driver: bridge

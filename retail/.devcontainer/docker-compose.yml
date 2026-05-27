@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  dev:
+    image: mcr.microsoft.com/devcontainers/javascript-node:0-20
+    volumes:
+      - ..:/workspace:cached
+    working_dir: /workspace
+    command: sleep infinity
+    env_file:
+      - ../.env.example
+    environment:
+      NODE_ENV: development
+      LOG_LEVEL: debug
+      ALLOW_REGISTRATION: true
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: change_me_root_password
+      MYSQL_DATABASE: retail_crm
+      MYSQL_USER: crm
+      MYSQL_PASSWORD: change_me_root_password
+    volumes:
+      - db_data:/var/lib/mysql
+      - ../scripts/001_create_tables_mysql.sql:/docker-entrypoint-initdb.d/001_schema.sql:ro
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-uroot', '-pchange_me_root_password']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  db_data:
+    name: retail-crm-dev-db_data
