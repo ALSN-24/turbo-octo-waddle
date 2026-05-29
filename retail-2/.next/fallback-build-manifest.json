@@ -1,0 +1,13 @@
+{
+  "pages": {
+    "/_app": []
+  },
+  "devFiles": [],
+  "polyfillFiles": [],
+  "lowPriorityFiles": [
+    "static/vrpsPeqsIZgFybzAviS_3/_buildManifest.js",
+    "static/vrpsPeqsIZgFybzAviS_3/_ssgManifest.js",
+    "static/vrpsPeqsIZgFybzAviS_3/_clientMiddlewareManifest.js"
+  ],
+  "rootMainFiles": []
+}

@@ -1,0 +1,30 @@
+# Dependencies (reinstalled during Docker build)
+node_modules
+.pnpm-store
+
+# Next.js build output (rebuilt in Docker)
+.next
+
+# Local env files — never bake secrets into the image
+.env
+.env.local
+.env.*.local
+
+# Version control
+.git
+.gitignore
+
+# Dev tooling
+.eslintcache
+*.log
+npm-debug.log*
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Test / coverage
+coverage
+__tests__
+*.test.ts
+*.spec.ts
